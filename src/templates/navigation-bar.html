@@ -1,0 +1,12 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+<div class="navbar">
+    <div class="left-text">
+            <a class="navbar-title" href="{% url 'main:index' %}">Учет материальных и финансовых средств</a>
+    </div>
+    <div class="center-text"></div>
+    <div class="right-text">
+        <strong>Бюджет: {{ budget.budget }} сом | Наценка: {{ budget.percent }}% | Бонус: {{ budget.bonus }}%</strong>
+    </div>
+</div>

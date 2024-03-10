@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% include 'navigation-bar.html' %}
+
+{% block body %}
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_div }}
+        <button type="submit">Подтвердить</button>
+    </form>
+    
+    <div>
+        <strong>
+            <a href="{% url 'employees:salary-index' %}">Назад к списку записей</a>
+        </strong>
+    </div>
+    
+{% endblock %}

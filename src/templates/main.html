@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% include 'navigation-bar.html' %}
+
+{% block body %}
+
+<div>
+
+    <style>
+        
+        h1 {
+            text-align: center;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+        }
+
+        li {
+            display: inline-block;
+            margin: 0 15px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            font-size: 18px;
+        }
+    </style>
+
+    <h1>Главная страница</h1>
+    
+    <ul>
+        <li><a href="{% url 'employees:index' %}">Сотрудники</a></li>
+        <li><a href="{% url 'ingredients:index' %}">Ингредиенты</a></li>
+        <li><a href="{% url 'materials:index' %}">Сырье</a></li>
+        <li><a href="{% url 'procurements:index' %}">Закупки сырья</a></li>
+        <li><a href="{% url 'products:index' %}">Готовая продукция</a></li>
+        <li><a href="{% url 'production:index' %}">Производство продукции</a></li>
+        <li><a href="{% url 'sales:index' %}">Продажа продукции</a></li>
+        <li><a href="{% url 'employees:salary-index' %}">Заработная плата</a></li>
+    </ul>
+    
+</div>
+
+{% endblock %}

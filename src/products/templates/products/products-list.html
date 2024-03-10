@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<div>
+    <h1>Список готовой продукции</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th>Единица измерения</th>
+                <th>Количество</th>
+                <th>Сумма</th>
+            </tr>
+        </thead>
+    
+        <tbody>
+            {% for product in products %}
+                <tr>
+                    <td>{{ product.id }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.unit_of_measure }}</td>
+                    <td>{{ product.amount }}</td>
+                    <td>{{ product.sum }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div>
+        <strong>
+            <a href="{% url 'products:create' %}">Создать новый тип продукции</a>
+        </strong>
+    </div>
+
+</div>
+
+{% endblock %}

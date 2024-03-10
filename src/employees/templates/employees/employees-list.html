@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<div>
+    <h1>Список сотрудников</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>ФИО</th>
+                <th>Должность</th>
+                <th>Зарплата</th>
+                <th>Адрес</th>
+                <th>Телефон</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for employee in employees %}
+                <tr>
+                    <td>{{ employee.id }}</td>
+                    <td>{{ employee.FIO }}</td>
+                    <td>{{ employee.position }}</td>
+                    <td>{{ employee.salary }}</td>
+                    <td>{{ employee.address }}</td>
+                    <td>{{ employee.phone_number }}</td>
+                    <td><a href="{% url 'employees:delete' employee.id %}">Удалить</a> | <a href="{% url 'employees:update' employee.id %}">Редактировать</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div>
+        <strong>
+            <a href="{% url 'employees:create' %}">Создать новую запись</a>
+        </strong>
+    </div>
+    
+</div>
+
+{% endblock %}
+    

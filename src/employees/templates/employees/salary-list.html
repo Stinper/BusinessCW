@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% include 'navigation-bar.html' %}
+
+{% block body %}
+    
+<div>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    <h1>Заработная плата сотрудников</h1>
+
+    <form id="year_month_form" method="POST">
+        {% csrf_token %}
+        <strong>Выберите год и месяц</strong>
+        {{ choice_form.as_div }}
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('year_month_form');
+            const yearSelect = form.querySelector('#id_year');
+            const monthSelect = form.querySelector('#id_month');
+        
+            yearSelect.addEventListener('change', function() {
+                if (yearSelect.value && monthSelect.value) {
+                    form.submit();
+                }
+            });
+        
+            monthSelect.addEventListener('change', function() {
+                if (yearSelect.value && monthSelect.value) {
+                    form.submit();
+                }
+            });
+        });
+    </script>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Год</th>
+                <th>Месяц</th>
+                <th>Сотрудник</th>
+                <th>К-во закупок</th>
+                <th>К-во производств</th>
+                <th>К-во продаж</th>
+                <th>Общее к-во участий</th>
+                <th>Оклад</th>
+                <th>Бонус</th>
+                <th>К выдаче</th>
+                <th>Выдано</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for salary in salaries %}
+                <tr>
+                    <td>{{ salary.year }}</td>
+                    <td>{{ salary.month }}</td>
+                    <td>{{ salary.employee }}</td>
+                    <td>{{ salary.procurements }}</td>
+                    <td>{{ salary.productions }}</td>
+                    <td>{{ salary.sales }}</td>
+                    <td>{{ salary.common }}</td>
+                    <td>{{ salary.employee.salary }}</td>
+                    <td>{{ salary.bonus }}</td>
+                    <td>{{ salary.general }}</td>
+                    <td>{{ salary.is_issued }}</td>
+                    <td>
+                        {% if not salary.is_issued %}
+                            <a href="{% url 'employees:salary-update' salary.id %}">Редактировать</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if is_period_selected %}
+
+    <strong>
+        Общая сумма к выдаче: {{ total_sum }} | 
+        {% if not is_issued %}
+            <a href="{% url 'employees:salary-issue' %}">Выдать всем</a>
+        {% else %}
+            Зарплата за выбранный период уже выдана всем сотрудникам
+        {% endif %}
+    </strong>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

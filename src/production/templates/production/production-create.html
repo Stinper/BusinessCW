@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% include 'navigation-bar.html' %}
+
+{% block body %}
+    
+<div>
+    <h1>Создание новой записи</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit">Произвести</button>
+    </form>
+    
+    <div>
+        <strong>
+            <a href="{% url 'production:index' %}">Назад к списку записей</a>
+        </strong>
+    </div>
+    
+</div>
+
+{% endblock %}

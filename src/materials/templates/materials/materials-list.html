@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<div>
+    <h1>Список сырья</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th>Единица измерения</th>
+                <th>Количество</th>
+                <th>Сумма</th>
+            </tr>
+        </thead>
+    
+        <tbody>
+            {% for material in materials %}
+                <tr>
+                    <td>{{ material.id }}</td>
+                    <td>{{ material.name }}</td>
+                    <td>{{ material.unit_of_measure }}</td>
+                    <td>{{ material.amount }}</td>
+                    <td>{{ material.sum }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div>
+        <strong>
+            <a href="{% url 'procurements:create' %}">Закупить сырье</a> | <a href="{% url 'materials:create' %}">Добавить новый тип сырья</a>
+        </strong>
+    </div>
+
+</div>
+
+{% endblock %}

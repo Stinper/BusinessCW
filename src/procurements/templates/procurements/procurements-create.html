@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<div>
+    <h1>Закупка сырья</h1>
+    <strong>Бюджет: {{ budget }} сом</strong>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_div }}
+        <button type="submit">Добавить покупку</button>
+    </form>
+    
+    <div>
+        <strong>
+            <a href="{% url 'procurements:index' %}">Назад к списку записей</a>
+        </strong>
+    </div>
+    
+</div>
+
+{% endblock %}

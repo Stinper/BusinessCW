@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<div>
+    <h1>Список ингредиентов</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <label for="product">Выберите продукт:</label>
+            <select name="product", id="product">
+                <option value="" {% if not selected_product %}selected {% endif %} disabled>Выберите продукт</option>
+            
+            {% for product in products %}
+                <option value="{{ product.id }}" {% if product.id == selected_product %}selected{% endif %}>
+                    {{ product.name }}
+                </option>
+            {% endfor %}
+            
+        </select>
+            <button type="submit">Выбрать</button>
+        </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Продукт</th>
+                <th>Сырье</th>
+                <th>Количество</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+    
+        {% if selected_product %}
+    
+        <tbody>
+            {% for ingredient in ingredients %}
+                <tr>
+                    <td>{{ ingredient.id }}</td>
+                    <td>{{ ingredient.product }}</td>
+                    <td>{{ ingredient.material }}</td>
+                    <td>{{ ingredient.amount }}</td>
+                    <td><a href="{% url 'ingredients:delete' ingredient.id %}">Удалить</a> | <a href="{% url 'ingredients:update' ingredient.id %}">Редактировать</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div>
+        <strong>
+            <a href="{% url 'ingredients:create' %}">Создать новую запись</a>
+        </strong>
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

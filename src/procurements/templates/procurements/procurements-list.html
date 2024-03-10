@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<div>
+    <h1>Список закупок</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Сырье</th>
+                <th>Количество</th>
+                <th>Сумма</th>
+                <th>Дата</th>
+                <th>Сотрудник</th>
+            </tr>
+        </thead>
+    
+        <tbody>
+            {% for procurement in procurements %}
+                <tr>
+                    <td>{{ procurement.id }}</td>
+                    <td>{{ procurement.material }}</td>
+                    <td>{{ procurement.amount }}</td>
+                    <td>{{ procurement.sum }}</td>
+                    <td>{{ procurement.date }}</td>
+                    <td>{{ procurement.employee }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div>
+        <strong>
+            <a href="{% url 'procurements:create' %}">Создать новую запись</a> | <a href="{% url 'materials:index' %}">Посмотреть имеющееся сырье</a>
+        </strong>
+    </div>
+
+</div>
+
+{% endblock %}
