@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<div>
+    <h1>Редактирование продукта</h1>
+
+    <form method="POST" action="">
+        {% csrf_token %}
+        {{ form.as_div }}
+        <button type="submit">Сохранить изменения</button>
+    </form>
+    
+    <div>
+        <strong>
+            <a href="{% url 'products:index' %}">Назад к списку записей</a>
+        </strong>
+    </div>
+    
+</div>
+
+{% endblock %}

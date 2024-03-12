@@ -85,15 +85,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'sql_server.pyodbc',
-        'NAME': 'название_вашей_базы_данных',
-        'USER': 'ваше_имя_пользователя',
-        'PASSWORD': 'ваш_пароль',
-        'HOST': 'адрес_вашего_сервера_БД',
-        'PORT': '',  # По умолчанию для SQL Server используется порт 1433
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',  # Здесь указывается версия ODBC драйвера
-        },
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'business',
+        'USER': 'postgres',
+        'PASSWORD': '123',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
