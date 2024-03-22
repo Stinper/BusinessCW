@@ -1,7 +1,6 @@
 from django.db import connection
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.views.generic import ListView, CreateView
 
 from production.forms import ProductionForm
@@ -36,7 +35,7 @@ class CreateProductionView(CreateView):
                            {
                                'product_id': form.instance.product_id,
                                'product_amount': int(form.cleaned_data['amount']),
-                               'date': timezone.now().date(),
+                               'date': form.cleaned_data['current_date'],
                                'employee_id': form.instance.employee_id
                            })
             is_created = cursor.fetchall()

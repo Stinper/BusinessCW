@@ -1,10 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.db import connection
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from ingredients.forms import IngredientForm
 from ingredients.models import Ingredient
-from products.models import Product
 
 
 class IngredientListView(ListView):
@@ -12,29 +12,39 @@ class IngredientListView(ListView):
     template_name = 'ingredients/ingredients-list.html'
 
     def get(self, request, *args, **kwargs):
-        products = Product.objects.all()
         selected_product = request.session.get('selected_product')
-        ingredients = Ingredient.objects.filter(product_id=selected_product)
 
-        return render(request, self.template_name, {
-            'products': products,
-            'selected_product': int(selected_product) if selected_product else None,
-            'ingredients': ingredients if selected_product else None
-        })
+        context = self.get_context_data(product_id=selected_product)
+        return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        product_id = request.POST.get('product')
-        # Сохраняется ID, т.к. объект Product not serializable
+        product_id: int = int(request.POST.get('product'))
         request.session['selected_product'] = product_id
-        ingredients = Ingredient.objects.filter(product_id=product_id).select_related(
-            'product', 'material'
-        )
 
-        return render(request, self.template_name, context={
-            'ingredients': ingredients,
-            'products': Product.objects.all(),
-            'selected_product': int(product_id) if product_id else None
-        })
+        context = self.get_context_data(product_id=product_id)
+        return render(request, self.template_name, context)
+
+    def get_context_data(self, **kwargs):
+        context: dict = {}
+        product_id: int = kwargs.get('product_id')
+        context['selected_product'] = product_id
+
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM get_products_list()")
+            context['products'] = cursor.fetchall()
+
+        if product_id:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM get_ingredients_for_product(%(product_id)s, %(product_amount)s)",
+                               {
+                                   'product_id': product_id,
+                                   'product_amount': 1
+                               })
+                context['ingredients'] = cursor.fetchall()
+        else:
+            context['ingredients'] = None
+
+        return context
 
 
 class CreateIngredientView(CreateView):
@@ -42,6 +52,17 @@ class CreateIngredientView(CreateView):
     template_name = 'ingredients/ingredients-create.html'
     form_class = IngredientForm
     success_url = reverse_lazy('ingredients:index')
+
+    def form_valid(self, form):
+        with connection.cursor() as cursor:
+            cursor.execute("CALL create_ingredient(%(amount)s, %(material_id)s, %(product_id)s)",
+                           {
+                               'amount': form.cleaned_data['amount'],
+                               'material_id': form.instance.material_id,
+                               'product_id': form.instance.product_id
+                           })
+
+        return redirect('ingredients:index')
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -55,11 +76,32 @@ class UpdateIngredientView(UpdateView):
     form_class = IngredientForm
     success_url = reverse_lazy('ingredients:index')
 
+    def form_valid(self, form):
+        with connection.cursor() as cursor:
+            cursor.execute("CALL update_ingredient(%(id)s, %(amount)s, %(material_id)s, %(product_id)s)",
+                           {
+                               'id': form.instance.id,
+                               'amount': form.cleaned_data['amount'],
+                               'material_id': form.instance.material_id,
+                               'product_id': form.instance.product_id
+                           })
+
+        return redirect('ingredients:index')
+
 
 class DeleteIngredientView(DeleteView):
     model = Ingredient
     template_name = 'ingredients/ingredients-delete.html'
     success_url = reverse_lazy('ingredients:index')
+
+    def delete(self, request, *args, **kwargs):
+        with connection.cursor() as cursor:
+            cursor.execute("CALL delete_ingredient(%(id)s)",
+                           {
+                               'id': self.get_object().id
+                           })
+
+        return redirect('ingredients:index')
 
 
 

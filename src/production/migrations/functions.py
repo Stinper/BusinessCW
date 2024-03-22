@@ -43,23 +43,23 @@ def create_procedures_and_functions(apps, schema_editor):
                     INSERT INTO production_production (product_id, amount, date, employee_id)
                     VALUES (Prod_ID, Product_Amount, Production_Date, Employee_ID);
                     
-                    WITH total_sum_table AS (
-                        UPDATE materials_material AS m
-                        SET amount = m.amount - i.amount * product_amount,
-                            sum = m.sum - ((m.sum / m.amount) * i.amount * product_amount)
-                        FROM ingredients_ingredient AS i
-                        WHERE m.id = i.material_id AND i.product_id = prod_id
-                        RETURNING ((m.sum / m.amount) * i.amount * product_amount) AS total_sum
-                    )
-                    
-                    SELECT SUM(total_sum) INTO final_product_cost FROM total_sum_table;
+                    CREATE TEMP TABLE ingredients AS
+                        SELECT * FROM get_ingredients_for_product(Prod_id, Product_Amount);
+                        
+                    UPDATE materials_material AS materials SET
+                        amount = materials.amount - ingredients.amount,
+                        sum = materials.sum - ingredients.cost
+                    FROM ingredients
+                    WHERE materials.id = ingredients.material_id;
+            
+                    SELECT SUM(cost) INTO final_product_cost FROM ingredients;
                     
                     UPDATE products_product
                     SET amount = amount + product_amount,
                         sum = sum + final_product_cost
                     WHERE id = prod_id;
                     
-                    Is_Created := 1;
+                    is_created := 1;
                 ELSE
                     is_created := 0;
                 END IF;

@@ -4,27 +4,25 @@
 
 <div>
     <h1>Список ингредиентов</h1>
-        <form method="POST">
+        <form method="POST" id="ingredients-form">
             {% csrf_token %}
             <label for="product">Выберите продукт:</label>
-            <select name="product", id="product">
+            <select name="product" id="product">
                 <option value="" {% if not selected_product %}selected {% endif %} disabled>Выберите продукт</option>
             
             {% for product in products %}
-                <option value="{{ product.id }}" {% if product.id == selected_product %}selected{% endif %}>
-                    {{ product.name }}
+                <option value="{{ product.0 }}" {% if product.0 == selected_product %}selected{% endif %}>
+                    {{ product.1 }}
                 </option>
             {% endfor %}
             
         </select>
-            <button type="submit">Выбрать</button>
+
         </form>
 
     <table>
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Продукт</th>
                 <th>Сырье</th>
                 <th>Количество</th>
                 <th>Действия</th>
@@ -36,11 +34,9 @@
         <tbody>
             {% for ingredient in ingredients %}
                 <tr>
-                    <td>{{ ingredient.id }}</td>
-                    <td>{{ ingredient.product }}</td>
-                    <td>{{ ingredient.material }}</td>
-                    <td>{{ ingredient.amount }}</td>
-                    <td><a href="{% url 'ingredients:delete' ingredient.id %}">Удалить</a> | <a href="{% url 'ingredients:update' ingredient.id %}">Редактировать</a></td>
+                    <td>{{ ingredient.1 }}</td>
+                    <td>{{ ingredient.2 }}</td>
+                    <td><a href="{% url 'ingredients:delete' ingredient.0 %}">Удалить</a> | <a href="{% url 'ingredients:update' ingredient.0 %}">Редактировать</a></td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -54,6 +50,14 @@
 
     {% endif %}
 
-</div>
+    <script>
+        const selectElement = document.getElementById('product');
 
+        selectElement.addEventListener('change', function() {
+            var formElement = document.getElementById('ingredients-form');
+            formElement.submit();
+        });
+    </script>
+
+</div>
 {% endblock %}
