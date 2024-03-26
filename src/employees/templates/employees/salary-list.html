@@ -61,20 +61,20 @@
         <tbody>
             {% for salary in salaries %}
                 <tr>
-                    <td>{{ salary.year }}</td>
-                    <td>{{ salary.month }}</td>
-                    <td>{{ salary.employee }}</td>
-                    <td>{{ salary.procurements }}</td>
-                    <td>{{ salary.productions }}</td>
-                    <td>{{ salary.sales }}</td>
-                    <td>{{ salary.common }}</td>
-                    <td>{{ salary.employee.salary }}</td>
-                    <td>{{ salary.bonus }}</td>
-                    <td>{{ salary.general }}</td>
-                    <td>{{ salary.is_issued }}</td>
+                    <td>{{ salary.1 }}</td>
+                    <td>{{ salary.2 }}</td>
+                    <td>{{ salary.3 }}</td>
+                    <td>{{ salary.4 }}</td>
+                    <td>{{ salary.5 }}</td>
+                    <td>{{ salary.6 }}</td>
+                    <td>{{ salary.7 }}</td>
+                    <td>{{ salary.8 }}</td>
+                    <td>{{ salary.9}}</td>
+                    <td>{{ salary.10 }}</td>
+                    <td>{{ salary.11 }}</td>
                     <td>
-                        {% if not salary.is_issued %}
-                            <a href="{% url 'employees:salary-update' salary.id %}">Редактировать</a>
+                        {% if not salary.11 %}
+                            <a href="{% url 'employees:salary-update' salary.0 %}">Редактировать</a>
                         {% else %}
                             -
                         {% endif %}

@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.db.models import Sum
+from django.db import connection
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -76,7 +76,7 @@ class ListSalaryView(ListView):
         month: int = kwargs['month']
 
         context['salaries'] = SalaryService.get_salary_list(year, month)
-        context['total_sum'] = context['salaries'].aggregate(total_sum=Sum('general'))['total_sum']
+        context['total_sum'] = SalaryService.get_salary_total_sum(year, month)
         context['choice_form'] = SelectYearMonthForm()
         context['is_issued'] = SalaryService.is_issued(context['salaries'])
         context['is_period_selected'] = bool(year and month)
@@ -93,6 +93,16 @@ class UpdateSalaryView(UpdateView):
     form_class = SalaryForm
     success_url = reverse_lazy('employees:salary-index')
 
+    def form_valid(self, form):
+        with connection.cursor() as cursor:
+            cursor.execute("CALL update_salary(%(id)s, %(general)s)",
+                           {
+                               'id': self.kwargs['pk'],
+                               'general': form.cleaned_data['general']
+                           })
+
+        return redirect('employees:salary-index')
+
 
 class IssueSalaryView(View):
     @staticmethod
@@ -102,7 +112,7 @@ class IssueSalaryView(View):
         month: int = request.session.get('month')
 
         if Budget.objects.is_enough_budget(total_sum):
-            SalaryService.issue_all(SalaryService.get_salary_list(year, month))
+            SalaryService.issue_salary_to_all_employees(year, month)
         else:
             messages.error(request, 'Для выдачи зарплаты всем сотрудникам не хватает бюджета')
 

@@ -1,6 +1,4 @@
-from budget.models import Budget
-from employees.models import Salary, Employee
-
+from django.db import connection
 
 __all__ = [
     'SalaryService'
@@ -10,54 +8,48 @@ __all__ = [
 class SalaryService:
     @staticmethod
     def get_salary_list(year: int, month: int):
-        return Salary.objects.filter(year=year, month=month).select_related('employee')
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM get_salary_list(%(year)s, %(month)s)",
+                           {
+                               'year': year,
+                               'month': month
+                           })
+
+            return cursor.fetchall()
 
     @staticmethod
-    def is_salary_list_exists(year: int, month: int) -> bool:
-        return Salary.objects.filter(year=year, month=month).exists()
+    def get_salary_total_sum(year: int, month: int) -> int:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM get_salary_total_sum(%(year)s, %(month)s)",
+                           {
+                               'year': year,
+                               'month': month
+                           })
 
-    @classmethod
-    def create_salary_list(cls, year: int, month: int):
-        if cls.is_salary_list_exists(year, month):
-            return
-
-        employees = Employee.objects.all()
-        budget = Budget.objects.get(id=1)
-
-        for employee in employees:
-            procurements_count: int = employee.procurements.filter(date__year=year, date__month=month).count()
-            production_count: int = employee.productions.filter(date__year=year, date__month=month).count()
-            sales_count: int = employee.sales.filter(date__year=year, date__month=month).count()
-            common: int = procurements_count + production_count + sales_count
-            bonus = common * (budget.bonus / 100) * employee.salary
-
-            Salary.objects.create(
-                year=year,
-                month=month,
-                employee=employee,
-                procurements=procurements_count,
-                productions=production_count,
-                sales=sales_count,
-                common=common,
-                bonus=bonus,
-                general=bonus + employee.salary
-            )
+            return cursor.fetchall()[0][0]
 
     @staticmethod
-    def issue_all(salary_list):
-        budget = Budget.objects.get(id=1)
+    def create_salary_list(year: int, month: int):
+        with connection.cursor() as cursor:
+            cursor.execute("CALL create_salary_list(%(year)s, %(month)s)",
+                           {
+                               'year': year,
+                               'month': month
+                           })
 
-        for salary in salary_list:
-            budget.budget -= salary.general
-            budget.save()
-
-            salary.is_issued = True
-            salary.save()
+    @staticmethod
+    def issue_salary_to_all_employees(year: int, month: int):
+        with connection.cursor() as cursor:
+            cursor.execute("CALL issue_salary_to_all_employees(%(year)s, %(month)s)",
+                           {
+                               'year': year,
+                               'month': month
+                           })
 
     @staticmethod
     def is_issued(salary_list) -> bool:
         for salary in salary_list:
-            if not salary.is_issued:
+            if not salary[11]:
                 return False
 
         return True
