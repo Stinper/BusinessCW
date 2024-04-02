@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% include 'navigation-bar.html' %}
+
+{% block body %}
+    <div>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_div }}
+            
+            <button type="submit">Взять кредит</button>
+        </form>
+    </div>
+    
+    <strong>
+        <a href="{% url 'bank:index' %}">На главную</a>
+    </strong>
+    
+{% endblock %}

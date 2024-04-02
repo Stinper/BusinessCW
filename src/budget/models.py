@@ -22,7 +22,7 @@ class BudgetManager(models.Manager):
 
     @staticmethod
     def increase_budget(amount: float) -> bool:
-        return BudgetManager.increase_budget(-amount)
+        return BudgetManager.decrease_budget(-amount)
 
 
 class Budget(models.Model):
