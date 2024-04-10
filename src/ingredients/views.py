@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.db import connection
@@ -7,9 +8,10 @@ from ingredients.forms import IngredientForm
 from ingredients.models import Ingredient
 
 
-class IngredientListView(ListView):
+class IngredientListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Ingredient
     template_name = 'ingredients/ingredients-list.html'
+    permission_required = 'ingredients.view_ingredient'
 
     def get(self, request, *args, **kwargs):
         selected_product = request.session.get('selected_product')
@@ -47,11 +49,12 @@ class IngredientListView(ListView):
         return context
 
 
-class CreateIngredientView(CreateView):
+class CreateIngredientView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Ingredient
     template_name = 'ingredients/ingredients-create.html'
     form_class = IngredientForm
     success_url = reverse_lazy('ingredients:index')
+    permission_required = 'ingredients.add_ingredient'
 
     def form_valid(self, form):
         with connection.cursor() as cursor:
@@ -70,11 +73,12 @@ class CreateIngredientView(CreateView):
         return kwargs
 
 
-class UpdateIngredientView(UpdateView):
+class UpdateIngredientView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Ingredient
     template_name = 'ingredients/ingredients-update.html'
     form_class = IngredientForm
     success_url = reverse_lazy('ingredients:index')
+    permission_required = 'ingredients.change_ingredient'
 
     def form_valid(self, form):
         with connection.cursor() as cursor:
@@ -89,10 +93,11 @@ class UpdateIngredientView(UpdateView):
         return redirect('ingredients:index')
 
 
-class DeleteIngredientView(DeleteView):
+class DeleteIngredientView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Ingredient
     template_name = 'ingredients/ingredients-delete.html'
     success_url = reverse_lazy('ingredients:index')
+    permission_required = 'ingredients.delete_ingredient'
 
     def delete(self, request, *args, **kwargs):
         with connection.cursor() as cursor:

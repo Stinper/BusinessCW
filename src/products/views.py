@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.db import connection
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -7,10 +8,11 @@ from products.forms import ProductForm
 from products.models import Product
 
 
-class ListProductsView(ListView):
+class ListProductsView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Product
     template_name = 'products/products-list.html'
     context_object_name = 'products'
+    permission_required = 'products.view_product'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -23,11 +25,12 @@ class ListProductsView(ListView):
         return context
 
 
-class CreateProductView(CreateView):
+class CreateProductView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Product
     template_name = 'products/products-create.html'
     form_class = ProductForm
     success_url = reverse_lazy('products:index')
+    permission_required = 'products.add_product'
 
     def form_valid(self, form):
         with connection.cursor() as cursor:
@@ -42,11 +45,12 @@ class CreateProductView(CreateView):
         return redirect(reverse_lazy('products:index'))
 
 
-class UpdateProductView(UpdateView):
+class UpdateProductView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Product
     template_name = 'products/products-update.html'
     form_class = ProductForm
     success_url = reverse_lazy('products:index')
+    permission_required = 'products.change_product'
 
     def form_valid(self, form):
         with connection.cursor() as cursor:
@@ -62,10 +66,11 @@ class UpdateProductView(UpdateView):
         return redirect(reverse_lazy('products:index'))
 
 
-class DeleteProductView(DeleteView):
+class DeleteProductView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Product
     template_name = 'products/products-delete.html'
     success_url = reverse_lazy('products:index')
+    permission_required = 'products.delete_product'
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()

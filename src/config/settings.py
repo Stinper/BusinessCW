@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'production.apps.ProductionConfig',
     'products.apps.ProductsConfig',
     'sales.apps.SalesConfig',
-    'bank.apps.BankConfig'
+    'bank.apps.BankConfig',
+    'users.apps.UsersConfig'
 ]
 
 MIDDLEWARE = [
@@ -126,6 +127,13 @@ USE_I18N = True
 
 USE_TZ = True
 
+
+AUTHENTICATION_BACKENDS = [
+    'users.backends.AuthenticationBackend'
+]
+
+
+AUTH_USER_MODEL = 'users.User'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/

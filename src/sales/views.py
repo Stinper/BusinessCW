@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView
 
@@ -8,10 +8,11 @@ from sales.forms import SalesForm
 from sales.models import Sale
 
 
-class ListSalesView(ListView):
+class ListSalesView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Sale
     template_name = 'sales/sales-list.html'
     context_object_name = 'sales'
+    permission_required = 'sales.view_sale'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -19,11 +20,12 @@ class ListSalesView(ListView):
         return context
 
 
-class CreateSalesView(CreateView):
+class CreateSalesView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Sale
     template_name = 'sales/sales-create.html'
     form_class = SalesForm
     success_url = reverse_lazy('sales:index')
+    permission_required = 'sales.add_sale'
 
     def form_valid(self, form):
         product_id: int = form.instance.product_id

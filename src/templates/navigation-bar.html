@@ -5,8 +5,31 @@
     <div class="left-text">
             <a class="navbar-title" href="{% url 'main:index' %}">Учет материальных и финансовых средств</a>
     </div>
-    <div class="center-text"></div>
-    <div class="right-text">
-        <strong>Бюджет: {{ budget.budget }} сом | Наценка: {{ budget.percent }}% | Бонус: {{ budget.bonus }}%</strong>
-    </div>
+
+    {% if request.user.is_authenticated %}
+        <div class="center-text">
+            <strong>
+                Бюджет: {{ budget.budget }} сом | Наценка: {{ budget.percent }}% | Бонус: {{ budget.bonus }}
+            </strong>
+        </div>
+
+        <div class="right-text">
+            <strong>
+                Приветствую, {{ request.user }} 
+                <form action="{% url 'users:logout' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                 <button type="submit">Выйти</button>
+                </form>
+            </strong>
+        </div>
+
+    {% else %}
+        <div class="center-text"></div>
+        <div class="right-text">
+            <strong>
+                <a class="navbar-title" href="{% url 'users:login' %}">Войдите</a> |
+                <a class="navbar-title" href="{% url 'users:register' %}">Зарегистрируйтесь</a>
+            </strong>
+        </div>
+    {% endif %}
 </div>

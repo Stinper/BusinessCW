@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% include 'navigation-bar.html' %}
+
+{% block body %}
+
+<div>
+    <h1>Вход в учетную запись</h1>
+    
+    <form method="POST">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit">Войти</button>
+    </form>
+    
+    <strong>
+        <a href="{% url 'main:index' %}">На главную</a>
+    </strong>
+    
+</div>
+
+{% endblock body %}

@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import connection
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -7,10 +8,11 @@ from production.forms import ProductionForm
 from production.models import Production
 
 
-class ListProductionView(ListView):
+class ListProductionView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Production
     template_name = 'production/production-list.html'
     context_object_name = 'productions'
+    permission_required = 'production.view_production'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -23,11 +25,12 @@ class ListProductionView(ListView):
         return context
 
 
-class CreateProductionView(CreateView):
+class CreateProductionView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Production
     template_name = 'production/production-create.html'
     form_class = ProductionForm
     success_url = reverse_lazy('production:index')
+    permission_required = 'production.add_production'
 
     def form_valid(self, form):
         with connection.cursor() as cursor:

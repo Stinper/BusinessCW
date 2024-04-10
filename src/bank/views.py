@@ -1,6 +1,6 @@
 import datetime
 
-from django.forms import model_to_dict
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView
@@ -12,9 +12,10 @@ from bank.services.payment import PaymentService
 from budget.models import Budget
 
 
-class PaymentsListView(ListView):
+class PaymentsListView(LoginRequiredMixin, PermissionRequiredMixin,ListView):
     model = Payment
     template_name = 'bank/payments-list.html'
+    permission_required = 'bank.view_payment'
 
     def get(self, request, *args, **kwargs):
         credit_id = request.session.get('credit_id')
@@ -40,11 +41,12 @@ class PaymentsListView(ListView):
         return context
 
 
-class CreatePaymentView(CreateView):
+class CreatePaymentView(LoginRequiredMixin, PermissionRequiredMixin,CreateView):
     model = Payment
     template_name = 'bank/payments-create.html'
     form_class = PaymentForm
     success_url = reverse_lazy('bank:index')
+    permission_required = 'bank.add_payment'
 
     def get_initial(self):
         credit_id = self.request.session.get('credit_id')
@@ -64,10 +66,6 @@ class CreatePaymentView(CreateView):
             'remains': payment[8]
         }
 
-        # payment: Payment = PaymentService.calculate_payment(date, credit_id)
-        # initial = model_to_dict(payment)
-        # initial.pop('date')
-
         return initial
 
     def form_valid(self, form):
@@ -83,11 +81,12 @@ class CreatePaymentView(CreateView):
             return self.form_invalid(form)
 
 
-class CreateCreditView(CreateView):
+class CreateCreditView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Credit
     template_name = 'bank/credit-create.html'
     form_class = CreditForm
     success_url = reverse_lazy('bank:index')
+    permission_required = 'bank.add_credit'
 
     def form_valid(self, form):
         amount: float = form.cleaned_data['amount']

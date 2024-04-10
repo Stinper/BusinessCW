@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView
 
@@ -8,9 +8,10 @@ from procurements.forms import ProcurementForm
 from procurements.models import Procurement
 
 
-class ProcurementsListView(ListView):
+class ProcurementsListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Procurement
     template_name = 'procurements/procurements-list.html'
+    permission_required = 'procurements.view_procurement'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -18,11 +19,12 @@ class ProcurementsListView(ListView):
         return context
 
 
-class ProcurementsCreateView(CreateView):
+class ProcurementsCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Procurement
     template_name = 'procurements/procurements-create.html'
     form_class = ProcurementForm
     success_url = reverse_lazy('procurements:index')
+    permission_required = 'procurements.add_procurement'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
