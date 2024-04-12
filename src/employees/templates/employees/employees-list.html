@@ -13,6 +13,7 @@
                 <th>Зарплата</th>
                 <th>Адрес</th>
                 <th>Телефон</th>
+                <th>Имя пользователя</th>
                 <th>Действия</th>
             </tr>
         </thead>
@@ -25,6 +26,7 @@
                     <td>{{ employee.salary }}</td>
                     <td>{{ employee.address }}</td>
                     <td>{{ employee.phone_number }}</td>
+                    <td>{{ employee.username }}</td>
                     <td><a href="{% url 'employees:delete' employee.id %}">Удалить</a> | <a href="{% url 'employees:update' employee.id %}">Редактировать</a></td>
                 </tr>
             {% endfor %}

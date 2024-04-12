@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.contrib.auth.views import LoginView
 from django.db import connection
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -10,6 +11,14 @@ from budget.models import Budget
 from employees.forms import EmployeeForm, SelectYearMonthForm, SalaryForm
 from employees.models import Employee, Salary
 from employees.services.salary import SalaryService
+
+
+class UserLoginView(LoginView):
+    template_name = 'employees/user-login.html'
+    redirect_authenticated_user = True
+
+    def get_success_url(self):
+        return reverse_lazy('main:index')
 
 
 class EmployeesView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -31,6 +40,11 @@ class CreateEmployeeView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
     template_name = 'employees/employees-create.html'
     success_url = reverse_lazy('employees:index')
     permission_required = 'employees.add_employee'
+
+    def form_valid(self, form):
+        password = form.cleaned_data.get('password')
+        form.instance.set_password(password)
+        return super().form_valid(form)
 
 
 class UpdateEmployeeView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):

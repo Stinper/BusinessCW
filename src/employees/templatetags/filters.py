@@ -1,5 +1,6 @@
-from django.contrib.auth.models import User
 from django.template import Library
+
+from employees.models import Employee as User
 
 register = Library()
 

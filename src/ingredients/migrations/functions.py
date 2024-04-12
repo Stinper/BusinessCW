@@ -12,7 +12,7 @@ def create_procedures_and_functions(apps, schema_editor):
             AS $$
             BEGIN
               RETURN QUERY
-              
+
               SELECT
                 ingredients.id,
                 materials.name,
@@ -66,7 +66,7 @@ def create_procedures_and_functions(apps, schema_editor):
             BEGIN
               DELETE FROM ingredients_ingredient
               WHERE id = IngredientID;
-              
+
             END;
             $$ LANGUAGE plpgsql;
         """)

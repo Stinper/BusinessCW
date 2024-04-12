@@ -28,7 +28,7 @@ def create_functions_and_procedures(apps, schema_editor):
             LANGUAGE 'plpgsql'
             AS $BODY$
              BEGIN
-            
+
                 UPDATE products_product
                 SET
                     name = in_name,
@@ -36,7 +36,7 @@ def create_functions_and_procedures(apps, schema_editor):
                     sum = in_sum,
                     unit_of_measure_id = in_unit_of_measure_id
                 WHERE products_product.id = in_id;
-            
+
             END;
             $BODY$;
         """)
@@ -61,7 +61,7 @@ def create_functions_and_procedures(apps, schema_editor):
                 COST 100
                 VOLATILE PARALLEL UNSAFE
                 ROWS 1000
-            
+
             AS $BODY$
             BEGIN
                 RETURN QUERY

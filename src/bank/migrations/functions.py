@@ -10,7 +10,7 @@ def create_procedures_and_functions(apps, schema_editor):
             AS $$
             BEGIN
                 RETURN QUERY
-                
+
             SELECT
                 credit.id,
                 credit.amount,
@@ -21,7 +21,7 @@ def create_procedures_and_functions(apps, schema_editor):
                 credit.amount || ' сом, на срок: ' || credit.term || ' мес, дата выдачи: ' || credit.date AS credit_description
             FROM
                 bank_credit credit;
-                
+
             END;
             $$ LANGUAGE plpgsql;
         """)
@@ -34,7 +34,7 @@ def create_procedures_and_functions(apps, schema_editor):
             AS $$
             BEGIN
                 RETURN QUERY
-                
+
                 SELECT
                     payment.id,
                     payment.credit_id,
@@ -50,7 +50,7 @@ def create_procedures_and_functions(apps, schema_editor):
                     bank_payment payment
                 WHERE
                     payment.credit_id = target_credit_id;
-            
+
             END;
             $$ LANGUAGE plpgsql;
         """)
@@ -64,9 +64,9 @@ def create_procedures_and_functions(apps, schema_editor):
                 IF previous_payment_date IS NOT NULL THEN
                     credit_date := MAKE_DATE(EXTRACT(YEAR FROM credit_date)::INTEGER, EXTRACT(MONTH FROM previous_payment_date)::INTEGER, EXTRACT(DAY FROM credit_date)::INTEGER);
                 END IF;
-            
+
                 days_difference := (payment_date - credit_date);
-            
+
                 RETURN CASE
                     WHEN days_difference > 30 THEN days_difference - 30
                     ELSE 0
@@ -86,10 +86,10 @@ def create_procedures_and_functions(apps, schema_editor):
             DECLARE credit_annual_percent int;
             DECLARE credit_penalties float;
             DECLARE credit_date DATE;
-            
+
             DECLARE last_payment_date DATE;
             DECLARE last_payment_remains FLOAT;
-            
+
             DECLARE amount FLOAT;
             DECLARE percent FLOAT;
             DECLARE general_amount FLOAT;
@@ -104,33 +104,33 @@ def create_procedures_and_functions(apps, schema_editor):
                     credit_amount, credit_term, credit_annual_percent, credit_penalties, credit_date
                 FROM
                     bank_credit credit;
-                    
+
                 SELECT payment.date, payment.remains INTO last_payment_date, last_payment_remains
                 FROM bank_payment payment
                 WHERE payment.credit_id = cred_id
                 ORDER BY payment.date DESC
                 LIMIT 1;
-                    
+
                 IF last_payment_date IS NOT NULL THEN
                     days_overdue := (SELECT * FROM get_overdue(credit_date, payment_date, last_payment_date));
                 ELSE
                     days_overdue := (SELECT * FROM get_overdue(credit_date, payment_date));
                 END IF;
-                
+
                 amount := credit_amount / credit_term;
                 percent := (credit_amount * (credit_annual_percent / 100.0)) / 12.0;
                 general_amount := amount + percent;
                 penalties := general_amount * credit_penalties / 100.0 * days_overdue;
                 total := general_amount + penalties;
-                
+
                 IF last_payment_date IS NOT NULL THEN
                     remains := last_payment_remains - amount;
                 ELSE
                     remains := credit_amount - amount;
                 END IF;
-            
+
                 RETURN QUERY
-                
+
                 SELECT
                     cred_id,
                     payment_date,
@@ -141,7 +141,7 @@ def create_procedures_and_functions(apps, schema_editor):
                     penalties,
                     total,
                     remains;
-                    
+
             END;
             $$ LANGUAGE plpgsql;
         """)

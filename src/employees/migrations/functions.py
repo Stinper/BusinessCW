@@ -13,7 +13,7 @@ def create_procedures_and_functions(apps, schema_editor):
             AS $$
             BEGIN
                 RETURN QUERY
-                
+
                 SELECT
 				salary.id,
                 salary.year,
@@ -43,7 +43,7 @@ def create_procedures_and_functions(apps, schema_editor):
             AS $$
             DECLARE result INTEGER;
             BEGIN
-                
+
                 IF EXISTS(SELECT salary.year
                           FROM employees_salary salary
                           WHERE salary.year = target_year AND salary.month = target_month
@@ -52,9 +52,9 @@ def create_procedures_and_functions(apps, schema_editor):
                 ELSE
                     result := 0;
                 END IF;
-                
+
                 RETURN result;
-                
+
             END;
             $$ LANGUAGE plpgsql;
         """)
@@ -77,41 +77,41 @@ CREATE PROCEDURE create_salary_list(
                 IF is_salary_list_exists(target_year, target_month) = 1 THEN
                     RETURN;
                 END IF;
-                
+
                 SELECT b.budget, b.bonus INTO budget, budget_bonus
                 FROM budget_budget b
                 ORDER BY b.id
                 LIMIT 1;
-                
+
                 FOR employee IN SELECT * FROM employees_employee LOOP
                     SELECT COALESCE(COUNT(id), 0) INTO procurements_count
                     FROM procurements_procurement
                     WHERE EXTRACT (YEAR FROM date) = target_year AND
                           EXTRACT (MONTH FROM date) = target_month AND
                           employee_id = employee.id;
-                          
+
                     SELECT COALESCE(COUNT(id), 0) INTO productions_count
                     FROM production_production
                     WHERE EXTRACT (YEAR FROM date) = target_year AND
                           EXTRACT (MONTH FROM date) = target_month AND
                           employee_id = employee.id;
-                          
+
                     SELECT COALESCE(COUNT(id), 0) INTO sales_count
                     FROM sales_sale
                     WHERE EXTRACT (YEAR FROM date) = target_year AND
                           EXTRACT (MONTH FROM date) = target_month AND
                           employee_id = employee.id;
-                    
+
                     common := COALESCE(procurements_count, 0) + COALESCE(productions_count, 0) + COALESCE(sales_count, 0);
                     bonus := common * (budget_bonus / 100.0) * employee.salary;
-                    
+
                     INSERT INTO employees_salary (year, month, employee_id, procurements, productions,
                                                   sales, common, bonus, general, is_issued)
                     VALUES (target_year, target_month, employee.id, procurements_count, productions_count, 
                            sales_count, common, bonus, employee.salary + bonus, FALSE);
-                    
+
                 END LOOP;
-                
+
             END;	
             $$ LANGUAGE plpgsql;
         """)
@@ -128,9 +128,9 @@ CREATE PROCEDURE create_salary_list(
                 FROM employees_salary
                 WHERE year = target_year AND
                       month = target_month;
-                      
+
                 RETURN total_sum;
-                
+
             END;
             $$ LANGUAGE plpgsql;
         """)
@@ -144,22 +144,22 @@ CREATE PROCEDURE create_salary_list(
             DECLARE salary_record RECORD;
             DECLARE budget_id int;
             BEGIN
-                
+
                 SELECT b.id INTO budget_id
                 FROM budget_budget b
                 ORDER BY b.id
                 LIMIT 1;
-                
+
                 FOR salary_record IN SELECT * FROM get_salary_list(target_year, target_month) LOOP
                     UPDATE budget_budget 
                     SET budget = budget - salary_record.general
                     WHERE id = budget_id;
-                    
+
                     UPDATE employees_salary
                     SET is_issued = TRUE
                     WHERE id = salary_record.id;
                 END LOOP;
-                
+
             END;
             $$ LANGUAGE plpgsql;
         """)
@@ -175,7 +175,7 @@ CREATE PROCEDURE create_salary_list(
                 SET
                     general = new_general
                 WHERE id = salary_id;
-                
+
             END;
             $$ LANGUAGE plpgsql;
         """)
@@ -183,7 +183,7 @@ CREATE PROCEDURE create_salary_list(
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('employees', '0003_alter_salary_bonus'),
+        ('employees', '0001_initial'),
     ]
 
     operations = [

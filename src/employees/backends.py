@@ -1,5 +1,6 @@
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
 
 
 class AuthenticationBackend(ModelBackend):
@@ -21,3 +22,8 @@ class AuthenticationBackend(ModelBackend):
             return user_model.objects.get(pk=user_id)
         except user_model.DoesNotExist:
             return None
+
+    def _get_group_permissions(self, user_obj, obj=None):
+        group_field = user_obj.position.role
+        return Permission.objects.filter(group=group_field)
+

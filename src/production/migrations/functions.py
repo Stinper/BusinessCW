@@ -10,7 +10,7 @@ def create_procedures_and_functions(apps, schema_editor):
             )
             RETURNS INTEGER AS $$
             DECLARE result INTEGER;
-            
+
             BEGIN
                 IF EXISTS(SELECT materials_material.ID 
                          FROM ingredients_ingredient INNER JOIN
@@ -21,7 +21,7 @@ def create_procedures_and_functions(apps, schema_editor):
                 ELSE
                     result := 1;
                 END IF;
-                
+
                 RETURN result;
             END;
             $$ LANGUAGE plpgsql;
@@ -42,30 +42,30 @@ def create_procedures_and_functions(apps, schema_editor):
                 IF isenoughmaterialstocreateproduct(Prod_ID, Product_Amount) = 1 THEN
                     INSERT INTO production_production (product_id, amount, date, employee_id)
                     VALUES (Prod_ID, Product_Amount, Production_Date, Employee_ID);
-                    
+
                     CREATE TEMP TABLE ingredients AS
                         SELECT * FROM get_ingredients_for_product(Prod_id, Product_Amount);
-                        
+
                     UPDATE materials_material AS materials SET
                         amount = materials.amount - ingredients.amount,
                         sum = materials.sum - ingredients.cost
                     FROM ingredients
                     WHERE materials.id = ingredients.material_id;
-            
+
                     SELECT SUM(cost) INTO final_product_cost FROM ingredients;
-                    
+
                     UPDATE products_product
                     SET amount = amount + product_amount,
                         sum = sum + final_product_cost
                     WHERE id = prod_id;
-                    
+
                     is_created := 1;
                 ELSE
                     is_created := 0;
                 END IF;
-                
+
                 RETURN is_created;
-                
+
             END;
             $$ LANGUAGE plpgsql;
         """)
@@ -76,7 +76,7 @@ def create_procedures_and_functions(apps, schema_editor):
             AS $$
             BEGIN
                 RETURN QUERY
-            
+
                 SELECT
                     production_production.id,
                     products_product.name,
@@ -86,7 +86,7 @@ def create_procedures_and_functions(apps, schema_editor):
                 FROM production_production
                 INNER JOIN products_product ON products_product.id = production_production.product_id
                 INNER JOIN employees_employee ON employees_employee.id = production_production.employee_id;
-                
+
             END;
             $$ LANGUAGE plpgsql;
         """)

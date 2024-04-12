@@ -16,7 +16,7 @@
         <div class="right-text">
             <strong>
                 Приветствую, {{ request.user }} 
-                <form action="{% url 'users:logout' %}" method="post" style="display: inline;">
+                <form action="{% url 'employees:logout' %}" method="post" style="display: inline;">
                     {% csrf_token %}
                  <button type="submit">Выйти</button>
                 </form>
@@ -27,8 +27,7 @@
         <div class="center-text"></div>
         <div class="right-text">
             <strong>
-                <a class="navbar-title" href="{% url 'users:login' %}">Войдите</a> |
-                <a class="navbar-title" href="{% url 'users:register' %}">Зарегистрируйтесь</a>
+                <a class="navbar-title" href="{% url 'employees:login' %}">Войдите</a>
             </strong>
         </div>
     {% endif %}

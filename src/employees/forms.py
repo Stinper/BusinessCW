@@ -8,7 +8,7 @@ from employees.models import Employee, Salary
 class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee
-        fields = '__all__'
+        fields = ['FIO', 'position', 'salary', 'address', 'phone_number', 'username', 'password']
 
 
 def _get_month_name(month_number: int) -> str:
