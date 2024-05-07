@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <div>
+        {% include 'date-form.html' %}
+
+        {% if payments %}
+            <h2>Список выплат в заданном интервале</h2>
+
+            {% include 'bank/payments-table.html' %}
+
+            <form action="{% url 'bank:generate-report' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit">Сгенерировать отчет в Word</button>
+            </form>
+
+        {% else %}
+            <h2>В данном интервале выплаты не найдены</h2>
+        {% endif %}
+
+    </div>
+{% endblock %}

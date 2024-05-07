@@ -1,0 +1,47 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>Год</th>
+                <th>Месяц</th>
+                <th>Сотрудник</th>
+                <th>К-во закупок</th>
+                <th>К-во производств</th>
+                <th>К-во продаж</th>
+                <th>Общее к-во участий</th>
+                <th>Оклад</th>
+                <th>Бонус</th>
+                <th>К выдаче</th>
+                <th>Выдано</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for salary in salaries %}
+                <tr>
+                    <td>{{ salary.1 }}</td>
+                    <td>{{ salary.2 }}</td>
+                    <td>{{ salary.3 }}</td>
+                    <td>{{ salary.4 }}</td>
+                    <td>{{ salary.5 }}</td>
+                    <td>{{ salary.6 }}</td>
+                    <td>{{ salary.7 }}</td>
+                    <td>{{ salary.8 }}</td>
+                    <td>{{ salary.9}}</td>
+                    <td>{{ salary.10 }}</td>
+                    <td>{{ salary.11 }}</td>
+                    <td>
+                        {% if not salary.11 %}
+                            <a href="{% url 'employees:salary-update' salary.0 %}">Редактировать</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -1,3 +1,5 @@
+from typing import Collection, Any
+
 from django.contrib import messages
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.contrib.auth.views import LoginView
@@ -11,6 +13,8 @@ from budget.models import Budget
 from employees.forms import EmployeeForm, SelectYearMonthForm, SalaryForm
 from employees.models import Employee, Salary
 from employees.services.salary import SalaryService
+from utils.forms import DateRangeForm
+from utils.views import ReportViewMixin, GenerateReportMixin
 
 
 class UserLoginView(LoginView):
@@ -142,3 +146,37 @@ class IssueSalaryView(LoginRequiredMixin, PermissionRequiredMixin, View):
         return redirect('employees:salary-index')
 
 
+class SalaryReportView(LoginRequiredMixin, PermissionRequiredMixin, ReportViewMixin, ListView):
+    model = Salary
+    template_name = 'employees/sales-report-view.html'
+    permission_required = 'employees.view_salary'
+
+    session_start_date_name = 'salary_start_date'
+    session_end_date_name = 'salary_end_date'
+
+    def get_context_data(self, /, start_date=None, end_date=None, **kwargs):
+        context: dict = {
+            'date_range_form': DateRangeForm()
+        }
+
+        if start_date and end_date:
+            context['salaries'] = SalaryService.get_salary_list_between_dates(start_date, end_date)
+            context['date_range_form'].initial = {'start_date': str(start_date), 'end_date': str(end_date)}
+
+        return context
+
+
+class GenerateReportView(LoginRequiredMixin, PermissionRequiredMixin, GenerateReportMixin, View):
+    permission_required = 'employees.view_salary'
+    model = Salary
+    session_start_date_name = SalaryReportView.session_start_date_name
+    session_end_date_name = SalaryReportView.session_end_date_name
+    redirect_name = 'employees:salary-index'
+    report_main_header = 'Отчет по платежам по кредиту'
+
+    def get_record_set(self, start_date: str, end_date: str) -> Collection[Collection[Any]]:
+        return SalaryService.get_salary_list_between_dates(start_date, end_date)
+
+    def get_headers_list(cls) -> list:
+        return ['ID', 'Год', 'Месяц', 'Сотрудник', 'К-во закупок', 'К-во производств',
+                'К-во продаж', 'Общее к-во участий', 'Оклад', 'Бонус', 'Общее', 'Выдано']

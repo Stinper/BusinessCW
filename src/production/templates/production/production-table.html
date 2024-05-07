@@ -1,0 +1,28 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Продукт</th>
+                <th>Количество</th>
+                <th>Дата</th>
+                <th>Сотрудник</th>
+            </tr>
+        </thead>
+    
+        <tbody>
+            {% for production in productions %}
+                <tr>
+                    <td>{{ production.0 }}</td>
+                    <td>{{ production.1 }}</td>
+                    <td>{{ production.2 }}</td>
+                    <td>{{ production.3 }}</td>
+                    <td>{{ production.4 }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

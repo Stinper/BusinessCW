@@ -4,36 +4,13 @@
 
 <div>
     <h1>Список продаж</h1>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Продукт</th>
-                <th>Количество</th>
-                <th>Сумма</th>
-                <th>Дата</th>
-                <th>Сотрудник</th>
-            </tr>
-        </thead>
-    
-        <tbody>
-            {% for sale in sales %}
-                <tr>
-                    <td>{{ sale.id }}</td>
-                    <td>{{ sale.product }}</td>
-                    <td>{{ sale.amount }}</td>
-                    <td>{{ sale.sum }}</td>
-                    <td>{{ sale.date }}</td>
-                    <td>{{ sale.employee }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+    {% include 'sales/sales-table.html' %}
 
     <div>
         <strong>
-            <a href="{% url 'sales:create' %}">Добавить продажу</a>
+            <a href="{% url 'sales:create' %}">Добавить продажу</a> |
+            <a href="{% url 'sales:report' %}">Отчет</a>
         </strong>
     </div>
 </div>

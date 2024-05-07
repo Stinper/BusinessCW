@@ -6,42 +6,6 @@ from bank.models import Credit, Payment
 
 
 class PaymentService:
-    # @staticmethod
-    # def calculate_payment(date, credit_id: int) -> Payment:
-    #     try:
-    #         credit = Credit.objects.get(id=credit_id)
-    #         last_payment = Payment.objects.filter(credit_id=credit_id)
-    #
-    #         if last_payment.exists():
-    #             last_payment = last_payment.order_by('date').last()
-    #             days_overdue: int = _get_overdue(credit.date, date, previous_payment_date=last_payment.date)
-    #         else:
-    #             days_overdue: int = _get_overdue(credit.date, date)
-    #
-    #         amount: float = credit.amount / credit.term
-    #         percent: float = (credit.amount * (credit.annual_percent / 100)) / 12
-    #         general_amount: float = amount + percent
-    #         penalties: float = general_amount * credit.penalties / 100 * days_overdue
-    #         total: float = general_amount + penalties
-    #
-    #         if not last_payment:
-    #             remains: float = credit.amount - amount
-    #         else:
-    #             remains: float = last_payment.remains - amount
-    #
-    #         return Payment(credit_id=credit_id,
-    #                        date=date,
-    #                        amount=amount,
-    #                        percent=percent,
-    #                        general_amount=general_amount,
-    #                        days_overdue=days_overdue,
-    #                        penalties=penalties,
-    #                        total=total,
-    #                        remains=remains
-    #                        )
-    #     except Credit.DoesNotExist:
-    #         return Payment()
-
     @staticmethod
     def calculate_payment(date, credit_id: int):
         with connection.cursor() as cursor:
@@ -58,6 +22,22 @@ class PaymentService:
             cursor.execute("SELECT * FROM get_payments_list(%(credit_id)s)",
                            {
                                'credit_id': credit_id
+                           })
+            return cursor.fetchall()
+
+    @staticmethod
+    def get_payments_list_between_dates(credit_id: int, start_date: str, end_date: str):
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT id, credit_id, payment_date,"
+                           " round(amount::numeric, 4) as amount, round(percent::numeric, 4) as percent,"
+                           " round(general_amount::numeric, 4) as general_amount, days_overdue,"
+                           " penalties, round(total::numeric, 4) as total, remains"
+                           " FROM get_payments_list(%(credit_id)s) WHERE payment_date "
+                           "BETWEEN %(start_date)s AND %(end_date)s",
+                           {
+                               'credit_id': credit_id,
+                               'start_date': start_date,
+                               'end_date': end_date
                            })
             return cursor.fetchall()
 

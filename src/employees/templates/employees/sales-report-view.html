@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <div>
+        {% include 'date-form.html' %}
+    
+        {% if salaries %}
+             <h2>Список выдачи заработной платы в заданном диапазоне</h2>
+            
+            {% include 'employees/salary-table.html' %}
+            
+            <form action="{% url 'employees:generate-salary-report' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit">Сгенерировать отчет в Word</button>
+            </form>
+        {% else %}
+            <h2>В заданном диапазоне записей о выдаче заработной платы не найдено</h2>
+        {% endif %}
+    </div>
+{% endblock %}

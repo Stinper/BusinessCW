@@ -2,7 +2,8 @@ from django.contrib.auth.views import LogoutView
 from django.urls import path
 
 from employees.views import (EmployeesView, CreateEmployeeView, UpdateEmployeeView, DeleteEmployeeView,
-                             ListSalaryView, UpdateSalaryView, IssueSalaryView, UserLoginView)
+                             ListSalaryView, UpdateSalaryView, IssueSalaryView, UserLoginView, SalaryReportView,
+                             GenerateReportView)
 
 app_name = 'employees'
 
@@ -15,5 +16,7 @@ urlpatterns = [
     path('delete/<int:pk>/', DeleteEmployeeView.as_view(), name='delete'),
     path('salary/', ListSalaryView.as_view(), name='salary-index'),
     path('salary/update/<int:pk>', UpdateSalaryView.as_view(), name='salary-update'),
-    path('salary/issue-all', IssueSalaryView.as_view(), name='salary-issue')
+    path('salary/issue-all', IssueSalaryView.as_view(), name='salary-issue'),
+    path('salary-report/', SalaryReportView.as_view(), name='salary-report'),
+    path('generate-salary-report/', GenerateReportView.as_view(), name='generate-salary-report')
 ]

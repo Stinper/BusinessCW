@@ -6,33 +6,12 @@
 <div>
     <h1>Список производства</h1>
     
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Продукт</th>
-                <th>Количество</th>
-                <th>Дата</th>
-                <th>Сотрудник</th>
-            </tr>
-        </thead>
-    
-        <tbody>
-            {% for production in productions %}
-                <tr>
-                    <td>{{ production.0 }}</td>
-                    <td>{{ production.1 }}</td>
-                    <td>{{ production.2 }}</td>
-                    <td>{{ production.3 }}</td>
-                    <td>{{ production.4 }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    {% include 'production/production-table.html' %}
 
     <div>
         <strong>
-            <a href="{% url 'production:create' %}">Создать новую запись</a>
+            <a href="{% url 'production:create' %}">Создать новую запись</a> |
+            <a href="{% url 'production:report' %}">Отчет</a>
         </strong>
     </div>
 

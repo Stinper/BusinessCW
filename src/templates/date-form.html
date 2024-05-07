@@ -1,0 +1,31 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+<div>
+    <div>
+        <form method="POST" id="date-form">
+            {% csrf_token %}
+            {{ date_range_form.as_div }}
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('date-form');
+            const firstDate = form.querySelector('#id_start_date');
+            const secondDate = form.querySelector('#id_end_date');
+
+            firstDate.addEventListener('change', function() {
+                if (firstDate.value && secondDate.value) {
+                    form.submit();
+                }
+            });
+
+            secondDate.addEventListener('change', function() {
+                if (firstDate.value && secondDate.value) {
+                    form.submit();
+                }
+            });
+        });
+    </script>
+</div>

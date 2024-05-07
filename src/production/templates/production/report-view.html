@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <div>
+        {% include 'date-form.html' %}
+        
+        {% if productions %}
+            <h2>Список производств в заданном интервале</h2>
+            
+            {% include 'production/production-table.html' %}
+            
+            <form action="{% url 'production:generate-report' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit">Сгенерировать отчет в Word</button>
+            </form>
+            
+        {% else %}
+            <h2>В заданном интервале производств нет</h2>
+        {% endif %}
+    
+    </div>
+{% endblock %}

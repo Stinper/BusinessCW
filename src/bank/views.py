@@ -1,8 +1,10 @@
 import datetime
+from typing import Collection, Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic import ListView, CreateView
 
 from bank.forms import PaymentForm, CreditForm
@@ -10,6 +12,8 @@ from bank.models import Payment, Credit
 from bank.services.credit import CreditService
 from bank.services.payment import PaymentService
 from budget.models import Budget
+from utils.forms import DateRangeForm
+from utils.views import ReportViewMixin, GenerateReportMixin
 
 
 class PaymentsListView(LoginRequiredMixin, PermissionRequiredMixin,ListView):
@@ -93,3 +97,38 @@ class CreateCreditView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         Budget.objects.increase_budget(amount)
 
         return super().form_valid(form)
+
+
+class PaymentReportView(LoginRequiredMixin, PermissionRequiredMixin, ReportViewMixin, ListView):
+    model = Payment
+    template_name = 'bank/report-view.html'
+    permission_required = 'bank.view_payment'
+
+    session_start_date_name = 'payment_start_date'
+    session_end_date_name = 'payment_end_date'
+
+    def get_context_data(self, /, start_date=None, end_date=None, **kwargs):
+        context: dict = {
+            'date_range_form': DateRangeForm()
+        }
+
+        credit_id: int = self.request.session.get('credit_id')
+
+        if start_date and end_date and credit_id:
+            context['payments'] = PaymentService.get_payments_list_between_dates(credit_id, start_date, end_date)
+            context['date_range_form'].initial = {'start_date': str(start_date), 'end_date': str(end_date)}
+
+        return context
+
+
+class GenerateReportView(LoginRequiredMixin, PermissionRequiredMixin, GenerateReportMixin, View):
+    permission_required = 'employees.view_salary'
+    model = Payment
+    session_start_date_name = PaymentReportView.session_start_date_name
+    session_end_date_name = PaymentReportView.session_end_date_name
+    redirect_name = 'bank:index'
+    report_main_header = 'Отчет по выдаче заработной платы'
+
+    def get_record_set(self, start_date: str, end_date: str) -> Collection[Collection[Any]]:
+        credit_id: int = self.request.session.get('credit_id')
+        return PaymentService.get_payments_list_between_dates(credit_id, start_date, end_date)

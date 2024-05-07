@@ -180,6 +180,55 @@ CREATE PROCEDURE create_salary_list(
             $$ LANGUAGE plpgsql;
         """)
 
+        cursor.execute("""
+            CREATE OR REPLACE FUNCTION get_salary_list_between_dates(date_from DATE, date_to DATE)
+            RETURNS TABLE(id bigint,
+                          year integer,
+                          month integer,
+                          employee character varying,
+                          procurements_count integer,
+                          productions_count integer,
+                          sales_count integer,
+                          common integer, 
+                          salary integer,
+                          bonus double precision,
+                          general integer,
+                          is_issued boolean) 
+            AS 
+            $$
+                DECLARE from_year INT;
+                DECLARE from_month INT;
+                DECLARE to_year INT;
+                DECLARE to_month INT;
+            BEGIN
+                from_year := EXTRACT(year FROM date_from)::INTEGER;
+                from_month := EXTRACT(month FROM date_from)::INTEGER;
+                to_year := EXTRACT(year FROM date_to)::INTEGER;
+                to_month := EXTRACT(month FROM date_to)::INTEGER;
+                
+                
+                RETURN QUERY
+                
+                SELECT
+                    salary.id,
+                    salary.year,
+                    salary.month,
+                    employees."FIO",
+                    salary.procurements,
+                    salary.productions,
+                    salary.sales,
+                    salary.common,
+                    employees.salary,
+                    salary.bonus,
+                    salary.general,
+                    salary.is_issued
+                FROM employees_salary salary
+                INNER JOIN employees_employee employees ON (salary.employee_id = employees.id)
+                WHERE (salary.year BETWEEN from_year AND to_year) AND (salary.month BETWEEN from_month AND to_month);
+            END;
+            $$ LANGUAGE 'plpgsql'
+        """)
+
 
 class Migration(migrations.Migration):
     dependencies = [

@@ -1,0 +1,35 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+<div>
+    <table>
+        <thead>
+        <tr>
+            <th>Дата</th>
+            <th>Основная сумма</th>
+            <th>Процент</th>
+            <th>Общая сумма</th>
+            <th>Просрочено дней</th>
+            <th>Пени</th>
+            <th>Итого</th>
+            <th>Остаток</th>
+        </tr>
+        </thead>
+
+
+        <tbody>
+        {% for payment in payments %}
+            <tr>
+                <td>{{ payment.2 }}</td>
+                <td>{{ payment.3 }}</td>
+                <td>{{ payment.4 }}</td>
+                <td>{{ payment.5 }}</td>
+                <td>{{ payment.6 }}</td>
+                <td>{{ payment.7 }}</td>
+                <td>{{ payment.8 }}</td>
+                <td>{{ payment.9 }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

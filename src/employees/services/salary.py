@@ -18,6 +18,17 @@ class SalaryService:
             return cursor.fetchall()
 
     @staticmethod
+    def get_salary_list_between_dates(date_from: str, date_to: str):
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM get_salary_list_between_dates(%(date_from)s, %(date_to)s)",
+                           {
+                               'date_from': date_from,
+                               'date_to': date_to
+                           })
+
+            return cursor.fetchall()
+
+    @staticmethod
     def get_salary_total_sum(year: int, month: int) -> int:
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM get_salary_total_sum(%(year)s, %(month)s)",

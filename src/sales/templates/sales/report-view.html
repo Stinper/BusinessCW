@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <div>
+        {% include 'date-form.html' %}
+
+        {% if sales %}
+            <h2>Список продаж в заданном диапазоне</h2>
+
+            {% include 'sales/sales-table.html' %}
+
+            <form action="{% url 'sales:generate-report' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit">Сгенерировать отчет в Word</button>
+            </form>
+
+        {% else %}
+            <h2>В заданном интервале продаж нет</h2>
+        {% endif %}
+
+    </div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+<div>
+    <form id="year_month_form" method="POST">
+        {% csrf_token %}
+        <strong>Выберите год и месяц</strong>
+        {{ choice_form.as_div }}
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('year_month_form');
+            const yearSelect = form.querySelector('#id_year');
+            const monthSelect = form.querySelector('#id_month');
+        
+            yearSelect.addEventListener('change', function() {
+                if (yearSelect.value && monthSelect.value) {
+                    form.submit();
+                }
+            });
+        
+            monthSelect.addEventListener('change', function() {
+                if (yearSelect.value && monthSelect.value) {
+                    form.submit();
+                }
+            });
+        });
+    </script>
+</div>
